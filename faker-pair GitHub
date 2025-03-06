@@ -1,0 +1,38 @@
+composer require fakerphp/faker
+
+fake_data_loader.php
+
+<?php
+require 'vendor/autoload.php';
+
+use Faker\Factory;
+
+$host = 'localhost';
+$dbname = 'your_database';
+$username = 'your_username';
+$password = 'your_password';
+
+try {
+    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $username, $password);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    $faker = Factory::create();
+
+    $numRecords = 100;
+
+    $stmt = $pdo->prepare("INSERT INTO users (name, email, phone, address) VALUES (:name, :email, :phone, :address)");
+
+    for ($i = 0; $i < $numRecords; $i++) {
+        $stmt->execute([
+            ':name'    => $faker->name(),
+            ':email'   => $faker->unique()->safeEmail(),
+            ':phone'   => $faker->phoneNumber(),
+            ':address' => $faker->address(),
+        ]);
+    }
+
+    echo "$numRecords fake records inserted successfully!";
+} catch (PDOException $e) {
+    echo "Database error: " . $e->getMessage();
+}
+?>
