@@ -1,1 +1,1 @@
-# faker-pair-GitHub
+# faker-GitHub
